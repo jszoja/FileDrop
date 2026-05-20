@@ -266,11 +266,15 @@
   //? classRegExp(null)         // the same as above
   //? classRegExp(window)       // the same as above
   //? classRegExp(null).test('foo')  //=> false (always)
+  global.escapeRegExp = function (str) {
+    return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  }
+
   global.classRegExp = function (className) {
     if (className == '' || typeof className == 'object') {
       return /$o_O/  // never matches.
     } else {
-      return new RegExp('(^|\\s+)' + className + '(\\s+|$)', 'gi')
+      return new RegExp('(^|\\s+)' + global.escapeRegExp(className) + '(\\s+|$)', 'gi')
     }
   }
 
@@ -1807,7 +1811,7 @@
     //? ofType('image').first()   //=> File or undefined if none
     self.ofType = function (mime) {
       mime += mime.indexOf('/') == -1 ? '/' : '$'
-      mime = new RegExp('^' + mime, 'i')
+      mime = new RegExp('^' + global.escapeRegExp(mime), 'i')
       return self.filter(function (f) { return mime.test(f.type) })
     }
 
